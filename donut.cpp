@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <cmath>
+#include <random>
 
 
 typedef double flt;
@@ -91,6 +92,7 @@ Quaternion operator*(const Quaternion& a, const Quaternion &b){
 
 class Donut{
 public:
+    std::mt19937 rnd;
     flt PHI = atan2(0, -1);
     const flt inf = 1e40;
 
@@ -106,19 +108,21 @@ public:
 
     Vec rotation_axis = Vec(2, 3, 1).normalize();
 
+    Vec rotation_axis_2 = Vec(2, -2, -1).normalize();
+
     Vec light_direction = Vec(4, 4, -1).normalize();
 
     std::string brightness_string = ".,-~:;=!*#$@";
 
     flt y_factor;
 
-    Donut(int screen_x = 100, int screen_y = 40, flt R = 100, flt r = 30, flt D = 500, flt d = 90,
-        int iters_big_circle = 200, int iters_small_circle = 200, flt y_factor=0.6) 
+    Donut(int screen_x = 100, int screen_y = 40, flt R = 100, flt r = 35, flt D = 500, flt d = 110,
+        int iters_big_circle = 200, int iters_small_circle = 200, flt y_factor=0.6, int random_seed=12341) 
         : rotor_left(1), rotor_right(1), screen_x(screen_x), screen_y(screen_y), 
         screen_center_x(screen_x / 2), screen_center_y(screen_y / 2),
         R(R), r(r), D(D), d(d), 
         iters_big_circle(iters_big_circle), iters_small_circle(iters_small_circle),
-        y_factor(y_factor) {
+        y_factor(y_factor), rnd(random_seed) {
         
     }
 
@@ -165,6 +169,11 @@ public:
         rotor_left = rotation_quaternion * rotor_left;
         rotor_right = rotor_right * rotation_quaternion.inv();
     }
+
+    void rotate_rotation_axis(flt rotation_angle = 0.03){
+        Quaternion rotation_quaternion = Quaternion(cos(rotation_angle), sin(rotation_angle) * rotation_axis_2);
+        rotation_axis = (rotation_quaternion * rotation_axis * rotation_quaternion.inv()).v;
+    }
 };
 
 
@@ -183,13 +192,14 @@ int main(){
     Donut donut;
     while(1){
         donut.rotate();
+        donut.rotate_rotation_axis();
         auto rndrd = donut.render();
         // system("clear");
         for(auto s: rndrd){
             std::cout << s << "\n";
         }
         std::cout << std::endl;
-        sleep(30);
+        sleep(15);
     }
     return 0;
 }
