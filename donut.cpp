@@ -160,7 +160,7 @@ public:
         return rs;
     }
 
-    void rotate(flt rotation_angle = 0.12){
+    void rotate(flt rotation_angle = 0.05){
         Quaternion rotation_quaternion = Quaternion(cos(rotation_angle), sin(rotation_angle) * rotation_axis);
         rotor_left = rotation_quaternion * rotor_left;
         rotor_right = rotor_right * rotation_quaternion.inv();
@@ -177,6 +177,9 @@ void sleep(long long x){
 
 
 int main(){
+    std::ios::sync_with_stdio(0);
+    std::cin.tie(0);
+    std::cout.tie(0);
     Donut donut;
     while(1){
         donut.rotate();
@@ -186,7 +189,7 @@ int main(){
             std::cout << s << "\n";
         }
         std::cout << std::endl;
-        sleep(100);
+        sleep(30);
     }
     return 0;
 }
